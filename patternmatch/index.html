@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PatternMatch</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f2ec;color:#171717;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:720px;margin:auto;padding:20px}.brand{font-size:12px;letter-spacing:.16em;font-weight:800;color:#756f68}
+h1{font-size:36px;line-height:1.02;margin:8px 0}.sub{color:#6d6862;margin-bottom:20px}.card{background:#fff;border:1px solid #ded8d0;border-radius:22px;padding:18px;margin:14px 0}
+input[type=file]{display:block;width:100%;font-size:16px;border:1px solid #d8d2ca;border-radius:14px;padding:12px;background:#fff}
+.preview{display:none;width:100%;max-height:420px;object-fit:contain;background:#eee9e3;border-radius:16px;margin-top:14px}
+.ok{color:#176a43;font-weight:750}.muted{color:#746f69;font-size:13px}label{display:block;font-size:13px;font-weight:800;margin:14px 0 7px}
+select{width:100%;height:48px;border:1px solid #d8d2ca;border-radius:12px;background:#fff;padding:0 12px;font-size:16px}
+button{width:100%;border:0;border-radius:14px;background:#111;color:#fff;padding:15px;font-size:16px;font-weight:800;margin-top:16px}
+button:disabled{opacity:.4}.result{display:none}.pill{display:inline-block;border:1px solid #ddd6ce;border-radius:999px;padding:7px 10px;margin:3px;font-size:13px}
+ul{padding-left:20px}li{margin:7px 0}
+</style>
+</head>
+<body><main>
+<div class="brand">PATTERNMATCH</div><h1>Photo → Pattern</h1>
+<p class="sub">Select a customer's reference image from your phone, preview it, then get a sewing-pattern starting point.</p>
+
+<section class="card">
+<label for="photo">Customer reference image</label>
+<input id="photo" type="file" accept="image/*">
+<img id="preview" class="preview" alt="Selected garment reference">
+<p id="fileStatus" class="muted">No image selected.</p>
+
+<label for="garment">Garment</label>
+<select id="garment">
+<option value="dress">Dress / gown</option><option value="corset">Corset dress</option>
+<option value="blouse">Blouse / top</option><option value="shirt">Shirt</option>
+<option value="trouser">Trouser</option><option value="jacket">Jacket / blazer</option>
+<option value="jumpsuit">Jumpsuit</option><option value="bubu">Bubu / kaftan</option>
+<option value="senator">Senator set</option><option value="skirt">Skirt</option>
+</select>
+<button id="go" disabled>Recommend pattern</button>
+</section>
+
+<section id="result" class="card result">
+<div class="brand">RECOMMENDED STARTING BLOCK</div><h2 id="pattern"></h2>
+<p id="why" class="sub"></p>
+<h3>Pattern pieces</h3><ul id="pieces"></ul>
+<h3>Measurements needed</h3><div id="measures"></div>
+</section>
+</main>
+<script>
+const photo=document.getElementById('photo'),preview=document.getElementById('preview'),status=document.getElementById('fileStatus'),go=document.getElementById('go');
+let imageReady=false,oldUrl=null;
+photo.addEventListener('change',()=>{
+ const f=photo.files&&photo.files[0];
+ imageReady=false;go.disabled=true;
+ if(oldUrl){URL.revokeObjectURL(oldUrl);oldUrl=null}
+ if(!f){preview.style.display='none';status.textContent='No image selected.';return}
+ if(!f.type.startsWith('image/')){preview.style.display='none';status.textContent='Please choose an image.';return}
+ oldUrl=URL.createObjectURL(f);preview.src=oldUrl;preview.style.display='block';
+ imageReady=true;go.disabled=false;status.innerHTML='<span class="ok">Image selected successfully:</span> '+f.name;
+});
+const db={
+dress:['Basic bodice + skirt block','Flexible base for recreating most dress silhouettes.',['Front bodice','Back bodice','Front skirt','Back skirt','Facing / lining'],['Bust','Waist','Hip','Shoulder','Back waist length','Dress length']],
+corset:['Princess-line corset block','Provides controlled shaping for a fitted structured bodice.',['Centre front','Side front','Side back','Centre back','Skirt panels','Lining'],['Bust','Underbust','Waist','Hip','Bust point','Bust span']],
+blouse:['Basic fitted bodice block','A strong starting point for most blouse variations.',['Front bodice','Back bodice','Sleeve','Facing'],['Bust','Waist','Shoulder','Armhole','Bicep','Top length']],
+shirt:['Classic shirt block','Includes the core structure for collar, placket and cuffs.',['Front','Back','Yoke','Sleeve','Collar','Collar stand','Cuff'],['Chest/Bust','Neck','Shoulder','Sleeve length','Bicep','Shirt length']],
+trouser:['Basic trouser block','Establishes crotch curve, rise and leg balance.',['Front trouser','Back trouser','Waistband'],['Waist','Hip','Rise','Thigh','Outseam']],
+jacket:['Tailored jacket block','Best starting point for structured jacket balance and shaping.',['Front','Side panel','Back','Sleeve','Collar','Facing'],['Chest/Bust','Waist','Shoulder','Back width','Sleeve length']],
+jumpsuit:['Bodice + trouser combination block','Balances upper body and trouser sections through the torso.',['Front bodice','Back bodice','Front trouser','Back trouser'],['Bust','Waist','Hip','Torso length','Rise','Inseam']],
+bubu:['Loose kaftan / bubu block','Preserves the relaxed volume and drape of the garment.',['Main front','Main back','Sleeve / extension','Neck facing'],['Bust','Hip','Shoulder','Garment length']],
+senator:['Straight tunic + trouser block','Provides a clean tunic structure with a tailored trouser base.',['Front tunic','Back tunic','Sleeve','Facing','Front trouser','Back trouser'],['Chest','Shoulder','Sleeve length','Tunic length','Waist','Hip']],
+skirt:['Basic skirt block','Provides correct waist and hip shaping before style changes.',['Front skirt','Back skirt','Waistband / facing'],['Waist','Hip','Waist-to-hip','Skirt length']]
+};
+go.addEventListener('click',()=>{
+ if(!imageReady)return;
+ const d=db[document.getElementById('garment').value];
+ document.getElementById('pattern').textContent=d[0];document.getElementById('why').textContent=d[1];
+ document.getElementById('pieces').innerHTML=d[2].map(x=>'<li>'+x+'</li>').join('');
+ document.getElementById('measures').innerHTML=d[3].map(x=>'<span class="pill">'+x+'</span>').join('');
+ document.getElementById('result').style.display='block';
+ document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script></body></html>
