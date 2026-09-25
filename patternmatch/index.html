@@ -1,80 +1,260 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PatternMatch</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PatternMatch — Photo to Pattern Idea</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f6f2ec;color:#171717;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-main{max-width:720px;margin:auto;padding:20px}.brand{font-size:12px;letter-spacing:.16em;font-weight:800;color:#756f68}
-h1{font-size:36px;line-height:1.02;margin:8px 0}.sub{color:#6d6862;margin-bottom:20px}.card{background:#fff;border:1px solid #ded8d0;border-radius:22px;padding:18px;margin:14px 0}
-input[type=file]{display:block;width:100%;font-size:16px;border:1px solid #d8d2ca;border-radius:14px;padding:12px;background:#fff}
-.preview{display:none;width:100%;max-height:420px;object-fit:contain;background:#eee9e3;border-radius:16px;margin-top:14px}
-.ok{color:#176a43;font-weight:750}.muted{color:#746f69;font-size:13px}label{display:block;font-size:13px;font-weight:800;margin:14px 0 7px}
-select{width:100%;height:48px;border:1px solid #d8d2ca;border-radius:12px;background:#fff;padding:0 12px;font-size:16px}
-button{width:100%;border:0;border-radius:14px;background:#111;color:#fff;padding:15px;font-size:16px;font-weight:800;margin-top:16px}
-button:disabled{opacity:.4}.result{display:none}.pill{display:inline-block;border:1px solid #ddd6ce;border-radius:999px;padding:7px 10px;margin:3px;font-size:13px}
-ul{padding-left:20px}li{margin:7px 0}
+:root{--bg:#f5f1ea;--card:#fff;--ink:#161616;--muted:#6f6962;--line:#ddd5cb;--soft:#eee8df;--ok:#176b45}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:860px;margin:auto;padding:18px}
+.brand{font-size:12px;letter-spacing:.15em;font-weight:900;color:#766f67}
+h1{font-size:clamp(34px,8vw,56px);line-height:.98;margin:8px 0 12px}
+h2{margin:6px 0 8px;font-size:26px}
+h3{font-size:15px;margin:0 0 10px}
+.sub{color:var(--muted);line-height:1.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:17px;margin:14px 0}
+label{display:block;font-size:13px;font-weight:850;margin:14px 0 7px}
+input[type=file],select{display:block;width:100%;font-size:16px;border:1px solid var(--line);border-radius:13px;padding:12px;background:white;color:var(--ink)}
+.preview{display:none;width:100%;max-height:420px;object-fit:contain;border-radius:16px;background:#ece7df;margin-top:12px}
+button{border:0;border-radius:14px;background:#111;color:white;padding:14px 16px;font-size:15px;font-weight:850}
+button:disabled{opacity:.4}
+.primary{width:100%;margin-top:16px}
+.secondary{background:#ece6de;color:#171717}
+.status{font-size:13px;color:var(--muted);margin:9px 0 0}
+.ok{color:var(--ok);font-weight:800}
+.result{display:none}
+.patternBoard{margin-top:14px;background:#fbfaf7;border:1px solid var(--line);border-radius:18px;padding:12px;overflow:hidden}
+.patternBoard svg{display:block;width:100%;height:auto;max-height:520px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:13px;background:#fff}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:720px){.grid.two{grid-template-columns:1fr 1fr}}
+.smallCard{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}
+ul{padding-left:20px;margin:0}li{margin:7px 0;line-height:1.4}
+.step{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.num{width:26px;height:26px;border-radius:50%;background:#111;color:white;display:grid;place-items:center;font-size:12px;font-weight:900;flex:0 0 auto}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.note{font-size:12px;color:var(--muted)}
+@media print{
+ body{background:white}.inputCard,.hero,.toolbar{display:none!important}
+ main{max-width:none;padding:0}.card{border:none;margin:0;padding:0}
+ .patternBoard{border:1px solid #bbb}
+}
 </style>
 </head>
-<body><main>
-<div class="brand">PATTERNMATCH</div><h1>Photo → Pattern</h1>
-<p class="sub">Select a customer's reference image from your phone, preview it, then get a sewing-pattern starting point.</p>
+<body>
+<main>
+<section class="hero">
+  <div class="brand">PATTERNMATCH</div>
+  <h1>Photo → Pattern Idea</h1>
+  <p class="sub">The goal is to help the tailor understand <b>how the outfit can be cut</b> — not just name the garment. Upload the customer reference, choose the closest garment type, and the app shows a visual pattern idea with pieces and alterations.</p>
+</section>
 
-<section class="card">
-<label for="photo">Customer reference image</label>
-<input id="photo" type="file" accept="image/*">
-<img id="preview" class="preview" alt="Selected garment reference">
-<p id="fileStatus" class="muted">No image selected.</p>
+<section class="card inputCard">
+  <label for="photo">1. Customer reference image</label>
+  <input id="photo" type="file" accept="image/*">
+  <img id="preview" class="preview" alt="Selected customer fashion reference">
+  <p id="fileStatus" class="status">No image selected.</p>
 
-<label for="garment">Garment</label>
-<select id="garment">
-<option value="dress">Dress / gown</option><option value="corset">Corset dress</option>
-<option value="blouse">Blouse / top</option><option value="shirt">Shirt</option>
-<option value="trouser">Trouser</option><option value="jacket">Jacket / blazer</option>
-<option value="jumpsuit">Jumpsuit</option><option value="bubu">Bubu / kaftan</option>
-<option value="senator">Senator set</option><option value="skirt">Skirt</option>
-</select>
-<button id="go" disabled>Recommend pattern</button>
+  <label for="garment">2. Closest garment type</label>
+  <select id="garment">
+    <option value="dress">Dress / gown</option>
+    <option value="corset">Corset dress</option>
+    <option value="blouse">Blouse / top</option>
+    <option value="shirt">Shirt</option>
+    <option value="trouser">Trouser</option>
+    <option value="jacket">Jacket / blazer</option>
+    <option value="jumpsuit">Jumpsuit</option>
+    <option value="bubu">Bubu / kaftan</option>
+    <option value="senator">Senator set</option>
+    <option value="skirt">Skirt</option>
+  </select>
+
+  <label for="detail">3. Main style feature seen in the picture</label>
+  <select id="detail">
+    <option value="plain">Clean / basic shape</option>
+    <option value="princess">Princess seams</option>
+    <option value="flare">Flared / A-line</option>
+    <option value="gather">Gathered / ruched</option>
+    <option value="pleat">Pleated</option>
+    <option value="structured">Structured / boned</option>
+    <option value="statementSleeve">Statement sleeve</option>
+  </select>
+
+  <button id="go" class="primary" disabled>Show tailor pattern idea</button>
 </section>
 
 <section id="result" class="card result">
-<div class="brand">RECOMMENDED STARTING BLOCK</div><h2 id="pattern"></h2>
-<p id="why" class="sub"></p>
-<h3>Pattern pieces</h3><ul id="pieces"></ul>
-<h3>Measurements needed</h3><div id="measures"></div>
+  <div class="brand">TAILOR PATTERN IDEA</div>
+  <h2 id="patternTitle"></h2>
+  <p id="patternWhy" class="sub"></p>
+
+  <div class="patternBoard">
+    <div id="diagram"></div>
+    <div id="diagramLegend" class="legend"></div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="smallCard">
+      <h3>Pattern pieces to prepare</h3>
+      <ul id="pieces"></ul>
+    </div>
+    <div class="smallCard">
+      <h3>Alterations to match the picture</h3>
+      <ul id="changes"></ul>
+    </div>
+  </div>
+
+  <div class="smallCard" style="margin-top:12px">
+    <h3>How the tailor should approach it</h3>
+    <div id="steps"></div>
+  </div>
+
+  <div class="smallCard" style="margin-top:12px">
+    <h3>Measurements needed</h3>
+    <div id="measures" class="legend"></div>
+  </div>
+
+  <div class="toolbar">
+    <button id="printBtn" type="button">Print / save pattern idea</button>
+    <button id="changeBtn" class="secondary" type="button">Try another style</button>
+  </div>
+  <p class="note">This is a construction guide / pattern concept, not a full-size production pattern. The next version can use AI to identify the style details from the uploaded photo automatically.</p>
 </section>
 </main>
+
 <script>
-const photo=document.getElementById('photo'),preview=document.getElementById('preview'),status=document.getElementById('fileStatus'),go=document.getElementById('go');
-let imageReady=false,oldUrl=null;
+const $=id=>document.getElementById(id);
+const photo=$('photo'),preview=$('preview'),status=$('fileStatus'),go=$('go');
+let imageReady=false,objectUrl=null;
+
 photo.addEventListener('change',()=>{
- const f=photo.files&&photo.files[0];
- imageReady=false;go.disabled=true;
- if(oldUrl){URL.revokeObjectURL(oldUrl);oldUrl=null}
- if(!f){preview.style.display='none';status.textContent='No image selected.';return}
- if(!f.type.startsWith('image/')){preview.style.display='none';status.textContent='Please choose an image.';return}
- oldUrl=URL.createObjectURL(f);preview.src=oldUrl;preview.style.display='block';
- imageReady=true;go.disabled=false;status.innerHTML='<span class="ok">Image selected successfully:</span> '+f.name;
+  const f=photo.files&&photo.files[0];
+  imageReady=false;go.disabled=true;
+  if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}
+  if(!f){preview.style.display='none';status.textContent='No image selected.';return}
+  if(!f.type.startsWith('image/')){preview.style.display='none';status.textContent='Please choose an image file.';return}
+  objectUrl=URL.createObjectURL(f);
+  preview.src=objectUrl;preview.style.display='block';
+  imageReady=true;go.disabled=false;
+  status.innerHTML='<span class="ok">Image selected:</span> '+f.name;
 });
-const db={
-dress:['Basic bodice + skirt block','Flexible base for recreating most dress silhouettes.',['Front bodice','Back bodice','Front skirt','Back skirt','Facing / lining'],['Bust','Waist','Hip','Shoulder','Back waist length','Dress length']],
-corset:['Princess-line corset block','Provides controlled shaping for a fitted structured bodice.',['Centre front','Side front','Side back','Centre back','Skirt panels','Lining'],['Bust','Underbust','Waist','Hip','Bust point','Bust span']],
-blouse:['Basic fitted bodice block','A strong starting point for most blouse variations.',['Front bodice','Back bodice','Sleeve','Facing'],['Bust','Waist','Shoulder','Armhole','Bicep','Top length']],
-shirt:['Classic shirt block','Includes the core structure for collar, placket and cuffs.',['Front','Back','Yoke','Sleeve','Collar','Collar stand','Cuff'],['Chest/Bust','Neck','Shoulder','Sleeve length','Bicep','Shirt length']],
-trouser:['Basic trouser block','Establishes crotch curve, rise and leg balance.',['Front trouser','Back trouser','Waistband'],['Waist','Hip','Rise','Thigh','Outseam']],
-jacket:['Tailored jacket block','Best starting point for structured jacket balance and shaping.',['Front','Side panel','Back','Sleeve','Collar','Facing'],['Chest/Bust','Waist','Shoulder','Back width','Sleeve length']],
-jumpsuit:['Bodice + trouser combination block','Balances upper body and trouser sections through the torso.',['Front bodice','Back bodice','Front trouser','Back trouser'],['Bust','Waist','Hip','Torso length','Rise','Inseam']],
-bubu:['Loose kaftan / bubu block','Preserves the relaxed volume and drape of the garment.',['Main front','Main back','Sleeve / extension','Neck facing'],['Bust','Hip','Shoulder','Garment length']],
-senator:['Straight tunic + trouser block','Provides a clean tunic structure with a tailored trouser base.',['Front tunic','Back tunic','Sleeve','Facing','Front trouser','Back trouser'],['Chest','Shoulder','Sleeve length','Tunic length','Waist','Hip']],
-skirt:['Basic skirt block','Provides correct waist and hip shaping before style changes.',['Front skirt','Back skirt','Waistband / facing'],['Waist','Hip','Waist-to-hip','Skirt length']]
+
+const diagrams={
+dress:`<svg viewBox="0 0 760 430" role="img" aria-label="Dress pattern idea">
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#555"/></marker></defs>
+<rect x="0" y="0" width="760" height="430" fill="#fbfaf7"/>
+<g fill="#f0ebe3" stroke="#171717" stroke-width="3">
+<path d="M70 75 L135 45 L200 75 L185 150 L165 205 L105 205 L85 150 Z"/>
+<path d="M260 75 L325 45 L390 75 L375 150 L355 205 L295 205 L275 150 Z"/>
+<path d="M95 230 L175 230 L215 385 L55 385 Z"/>
+<path d="M285 230 L365 230 L405 385 L245 385 Z"/>
+</g>
+<g stroke="#555" stroke-width="2" stroke-dasharray="7 6" fill="none">
+<path d="M135 75 L135 200"/><path d="M325 75 L325 200"/>
+<path d="M115 120 L135 165 L155 120"/><path d="M305 118 L325 164 L345 118"/>
+</g>
+<g font-family="system-ui" font-size="17" fill="#171717" text-anchor="middle">
+<text x="135" y="28">FRONT BODICE</text><text x="325" y="28">BACK BODICE</text>
+<text x="135" y="418">FRONT SKIRT</text><text x="325" y="418">BACK SKIRT</text>
+</g>
+<g stroke="#555" stroke-width="2" marker-end="url(#a)">
+<path d="M475 95 L402 95"/><path d="M475 175 L365 245"/><path d="M475 280 L405 345"/>
+</g>
+<g font-family="system-ui" font-size="16" fill="#444">
+<text x="490" y="92">shape neckline + armhole</text>
+<text x="490" y="172">join bodice to skirt</text>
+<text x="490" y="277">add flare here if needed</text>
+</g></svg>`,
+corset:`<svg viewBox="0 0 760 430" role="img" aria-label="Corset pattern idea">
+<rect width="760" height="430" fill="#fbfaf7"/>
+<g fill="#efe9df" stroke="#171717" stroke-width="3">
+<path d="M55 85 L110 50 L130 210 L75 230 Z"/><path d="M135 55 L185 45 L205 215 L135 210 Z"/>
+<path d="M230 55 L280 45 L280 210 L210 215 Z"/><path d="M305 50 L360 85 L340 230 L285 210 Z"/>
+<path d="M55 255 L150 240 L180 385 L35 385 Z"/><path d="M205 240 L300 255 L320 385 L175 385 Z"/>
+</g>
+<g stroke="#555" stroke-dasharray="6 6" stroke-width="2"><path d="M130 70 L135 205"/><path d="M205 65 L210 210"/><path d="M280 65 L285 205"/></g>
+<g font-family="system-ui" font-size="15" fill="#171717" text-anchor="middle">
+<text x="105" y="30">CF</text><text x="170" y="30">SIDE FRONT</text><text x="245" y="30">SIDE BACK</text><text x="330" y="30">CB</text>
+<text x="108" y="415">FRONT SKIRT</text><text x="248" y="415">BACK SKIRT</text></g>
+<g font-family="system-ui" font-size="16" fill="#444">
+<text x="430" y="100">• Princess-line shaping</text><text x="430" y="135">• Mark boning channels</text>
+<text x="430" y="170">• Separate lining pieces</text><text x="430" y="205">• Test bust cup / bust point</text>
+<text x="430" y="240">• Add seam allowance last</text></g></svg>`,
+blouse:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M70 95 L145 48 L220 95 L195 315 L95 315 Z"/><path d="M285 95 L360 48 L435 95 L410 315 L310 315 Z"/><path d="M500 90 Q570 45 640 90 L625 300 Q570 330 515 300 Z"/></g><g stroke="#555" stroke-width="2" stroke-dasharray="7 6"><path d="M145 145 L145 300"/><path d="M360 145 L360 300"/></g><g font-family="system-ui" font-size="17" fill="#171717" text-anchor="middle"><text x="145" y="30">FRONT</text><text x="360" y="30">BACK</text><text x="570" y="30">SLEEVE</text></g><g font-family="system-ui" font-size="15" fill="#444"><text x="515" y="360">Match sleeve head to armhole</text><text x="92" y="350">Rotate dart / add princess seam if required</text></g></svg>`,
+shirt:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M45 95 L125 55 L200 95 L190 330 L55 330 Z"/><path d="M240 95 L320 55 L395 95 L385 330 L250 330 Z"/><path d="M435 80 Q505 45 575 80 L565 300 Q505 330 445 300 Z"/><path d="M610 70 L720 70 L705 115 L625 115 Z"/><rect x="620" y="150" width="90" height="35" rx="6"/></g><g stroke="#555" stroke-width="2" stroke-dasharray="7 6"><path d="M125 55 L125 330"/><path d="M320 55 L320 330"/></g><g font-family="system-ui" font-size="16" fill="#171717" text-anchor="middle"><text x="125" y="30">FRONT</text><text x="320" y="30">BACK + YOKE</text><text x="505" y="30">SLEEVE</text><text x="665" y="45">COLLAR</text><text x="665" y="140">CUFF</text></g></svg>`,
+trouser:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M95 45 L200 45 L220 150 L190 385 L125 385 L145 165 L70 385 L20 385 L65 145 Z"/><path d="M300 45 L405 45 L445 150 L410 385 L345 385 L360 170 L270 385 L220 385 L285 140 Z"/></g><g stroke="#555" stroke-width="2" stroke-dasharray="7 6"><path d="M95 85 L195 85"/><path d="M300 85 L405 85"/></g><g font-family="system-ui" font-size="17" fill="#171717" text-anchor="middle"><text x="130" y="25">FRONT</text><text x="355" y="25">BACK</text></g><g font-family="system-ui" font-size="16" fill="#444"><text x="500" y="100">Check rise + crotch curve</text><text x="500" y="140">Shape waist / hip first</text><text x="500" y="180">Then adjust leg width</text><text x="500" y="220">Add pockets / pleats after fit</text></g></svg>`,
+jacket:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M50 90 L125 45 L205 90 L195 345 L65 345 Z"/><path d="M235 90 L310 45 L390 90 L380 345 L250 345 Z"/><path d="M430 85 Q500 42 570 85 L560 325 Q500 350 440 325 Z"/><path d="M610 65 L720 65 L690 125 L630 125 Z"/></g><g stroke="#555" stroke-width="2" stroke-dasharray="7 6"><path d="M125 80 L125 340"/><path d="M310 80 L310 340"/><path d="M95 115 L140 180 L180 110"/></g><g font-family="system-ui" font-size="16" fill="#171717" text-anchor="middle"><text x="125" y="28">FRONT + LAPEL</text><text x="310" y="28">BACK</text><text x="500" y="28">2-PC SLEEVE</text><text x="665" y="45">COLLAR</text></g></svg>`,
+jumpsuit:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M45 70 L110 40 L175 70 L165 190 L55 190 Z"/><path d="M205 70 L270 40 L335 70 L325 190 L215 190 Z"/><path d="M60 210 L155 210 L180 290 L155 395 L105 395 L112 295 L65 395 L25 395 L50 290 Z"/><path d="M220 210 L315 210 L350 290 L325 395 L275 395 L280 295 L225 395 L185 395 L210 290 Z"/></g><g font-family="system-ui" font-size="16" fill="#171717" text-anchor="middle"><text x="110" y="22">FRONT BODICE</text><text x="270" y="22">BACK BODICE</text><text x="105" y="425">FRONT TROUSER</text><text x="270" y="425">BACK TROUSER</text></g><g font-family="system-ui" font-size="16" fill="#444"><text x="430" y="110">Join at natural waist</text><text x="430" y="150">Check torso length</text><text x="430" y="190">Allow sitting / rise ease</text></g></svg>`,
+bubu:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M55 75 L175 35 L295 75 L265 385 L85 385 Z"/><path d="M340 75 L460 35 L580 75 L550 385 L370 385 Z"/></g><g stroke="#555" stroke-width="2" stroke-dasharray="7 6"><path d="M175 50 L175 380"/><path d="M460 50 L460 380"/></g><g font-family="system-ui" font-size="17" fill="#171717" text-anchor="middle"><text x="175" y="20">FRONT</text><text x="460" y="20">BACK</text></g><g font-family="system-ui" font-size="16" fill="#444"><text x="610" y="115">Keep generous ease</text><text x="610" y="155">Shape neckline</text><text x="610" y="195">Mark side opening</text><text x="610" y="235">Add sleeve extension if needed</text></g></svg>`,
+senator:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M40 75 L105 45 L170 75 L160 275 L50 275 Z"/><path d="M205 75 L270 45 L335 75 L325 275 L215 275 Z"/><path d="M390 65 Q450 40 510 65 L500 260 Q450 280 400 260 Z"/><path d="M545 70 L625 70 L645 165 L625 390 L585 390 L595 175 L550 390 L515 390 L535 160 Z"/></g><g font-family="system-ui" font-size="15" fill="#171717" text-anchor="middle"><text x="105" y="25">FRONT TUNIC</text><text x="270" y="25">BACK TUNIC</text><text x="450" y="25">SLEEVE</text><text x="580" y="25">TROUSER</text></g></svg>`,
+skirt:`<svg viewBox="0 0 760 430"><rect width="760" height="430" fill="#fbfaf7"/><g fill="#efe9df" stroke="#171717" stroke-width="3"><path d="M80 55 L190 55 L235 380 L35 380 Z"/><path d="M285 55 L395 55 L440 380 L240 380 Z"/></g><g stroke="#555" stroke-width="2" stroke-dasharray="7 6"><path d="M120 55 L135 140 L150 55"/><path d="M325 55 L340 140 L355 55"/></g><g font-family="system-ui" font-size="17" fill="#171717" text-anchor="middle"><text x="135" y="28">FRONT</text><text x="340" y="28">BACK</text></g><g font-family="system-ui" font-size="16" fill="#444"><text x="505" y="100">Shape waist + hip first</text><text x="505" y="145">Move / remove darts as needed</text><text x="505" y="190">Slash + spread for flare</text><text x="505" y="235">Add pleat/gather allowance before cutting</text></g></svg>`
 };
+
+const db={
+dress:{title:'Bodice + skirt pattern concept',why:'Start from fitted front/back bodice blocks and separate skirt panels, then copy the visible neckline, waistline and volume from the reference.',pieces:['Front bodice','Back bodice','Front skirt','Back skirt','Facing or lining'],measures:['Bust','Waist','Hip','Shoulder','Back waist length','Dress length']},
+corset:{title:'Princess-line corset pattern concept',why:'Use multiple bodice panels so the tailor can control bust, waist and torso shaping instead of forcing the shape from one piece.',pieces:['Centre front','Side front','Side back','Centre back','Lining pieces','Skirt panels if attached'],measures:['Bust','Underbust','Waist','Hip','Bust point','Bust span','Shoulder-to-waist']},
+blouse:{title:'Fitted bodice + sleeve concept',why:'Use a basic bodice as the foundation, then move darts/seams and change the sleeve to match the customer reference.',pieces:['Front bodice','Back bodice','Sleeve','Neck facing / collar'],measures:['Bust','Waist','Shoulder','Armhole','Bicep','Top length']},
+shirt:{title:'Classic shirt pattern concept',why:'Build from front, back/yoke and sleeve blocks, then copy collar, placket and cuff details from the reference.',pieces:['Front shirt','Back shirt','Yoke','Sleeve','Collar','Collar stand','Cuff'],measures:['Chest/Bust','Neck','Shoulder','Sleeve length','Bicep','Shirt length']},
+trouser:{title:'Front + back trouser pattern concept',why:'Set the rise, crotch curve and hip balance first, then adjust the leg shape to match the picture.',pieces:['Front trouser','Back trouser','Waistband','Pocket pieces if needed'],measures:['Waist','Hip','Rise','Thigh','Knee','Outseam']},
+jacket:{title:'Tailored jacket pattern concept',why:'Use front/back jacket blocks plus a shaped sleeve. Lapel, collar and panel seams should be copied after the body balance is correct.',pieces:['Front jacket','Back jacket','Side panel','Sleeve','Collar','Facing'],measures:['Chest/Bust','Waist','Shoulder','Back width','Sleeve length','Jacket length']},
+jumpsuit:{title:'Bodice + trouser combination concept',why:'Draft the upper and lower sections separately, then join them at the waist while preserving enough torso and rise ease.',pieces:['Front bodice','Back bodice','Front trouser','Back trouser','Sleeve or facing'],measures:['Bust','Waist','Hip','Torso length','Rise','Inseam']},
+bubu:{title:'Loose kaftan / bubu pattern concept',why:'Keep the main body simple and roomy, then shape neckline, sleeve extension and side openings to match the picture.',pieces:['Main front','Main back','Sleeve / extension','Neck facing'],measures:['Bust','Hip','Shoulder','Garment length','Sleeve opening']},
+senator:{title:'Tunic + trouser pattern concept',why:'Use a clean straight tunic block and a separate trouser block, then add neckline and finishing details from the reference.',pieces:['Front tunic','Back tunic','Sleeve','Neck facing','Front trouser','Back trouser'],measures:['Chest','Shoulder','Sleeve length','Tunic length','Waist','Hip','Trouser length']},
+skirt:{title:'Front + back skirt pattern concept',why:'Set waist and hip shaping first, then add flare, pleats, gathers or panels based on the reference image.',pieces:['Front skirt','Back skirt','Waistband / facing'],measures:['Waist','Hip','Waist-to-hip','Skirt length']}
+};
+
+function detailChanges(detail,garment){
+ const common={
+  plain:['Trace the base block cleanly and copy the visible neckline, length and hem shape from the picture.'],
+  princess:['Move the main dart into a princess seam. Mark bust point, then true the new seam before adding allowance.'],
+  flare:['Slash from hem toward the waist/hip and spread evenly. Keep waist or upper seam length controlled.'],
+  gather:['Add extra width only where the picture gathers. Mark start/end gathering points on both joining pieces.'],
+  pleat:['Add pleat intake to the paper pattern and mark fold, underlay and direction clearly.'],
+  structured:['Create separate lining/support pieces. Mark boning/interfacing areas and stabilize the main seams.'],
+  statementSleeve:['Keep the armhole stable, then alter the sleeve for puff, flare, volume or pleats without guessing the sleeve-head length.']
+ };
+ const arr=[...common[detail]];
+ if(garment==='dress'||garment==='corset')arr.push('Check how the bodice joins the skirt: natural waist, dropped waist, basque or raised waist.');
+ if(garment==='trouser'||garment==='jumpsuit')arr.push('Fit the crotch/rise before changing leg width or adding volume.');
+ if(garment==='jacket')arr.push('Do the body fitting before shaping lapel, collar and shoulder structure.');
+ return arr;
+}
+
+function tailorSteps(garment,detail){
+ return [
+  'Trace the recommended base block using the customer measurements.',
+  'Mark the major style lines seen in the reference photo: neckline, waist seam, panel seams, sleeve line and hem.',
+  detail==='plain'?'Keep the base shaping and adjust only the visible style lines.':'Apply the selected style alteration to the paper pattern before adding seam allowance.',
+  'Make a toile/sample first. Correct fit and balance on the body.',
+  'Only after the toile is approved, add final seam allowance, notches, grainlines and cutting instructions.'
+ ];
+}
+
 go.addEventListener('click',()=>{
  if(!imageReady)return;
- const d=db[document.getElementById('garment').value];
- document.getElementById('pattern').textContent=d[0];document.getElementById('why').textContent=d[1];
- document.getElementById('pieces').innerHTML=d[2].map(x=>'<li>'+x+'</li>').join('');
- document.getElementById('measures').innerHTML=d[3].map(x=>'<span class="pill">'+x+'</span>').join('');
- document.getElementById('result').style.display='block';
- document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+ const garment=$('garment').value;
+ const detail=$('detail').value;
+ const d=db[garment];
+ $('patternTitle').textContent=d.title;
+ $('patternWhy').textContent=d.why;
+ $('diagram').innerHTML=diagrams[garment];
+ $('diagramLegend').innerHTML=['Front / back pieces','Dashed lines = shaping / dart idea','Not full scale'].map(x=>'<span class="pill">'+x+'</span>').join('');
+ $('pieces').innerHTML=d.pieces.map(x=>'<li>'+x+'</li>').join('');
+ $('changes').innerHTML=detailChanges(detail,garment).map(x=>'<li>'+x+'</li>').join('');
+ $('steps').innerHTML=tailorSteps(garment,detail).map((x,i)=>'<div class="step"><span class="num">'+(i+1)+'</span><div>'+x+'</div></div>').join('');
+ $('measures').innerHTML=d.measures.map(x=>'<span class="pill">'+x+'</span>').join('');
+ $('result').style.display='block';
+ $('result').scrollIntoView({behavior:'smooth',block:'start'});
 });
-</script></body></html>
+
+$('printBtn').addEventListener('click',()=>window.print());
+$('changeBtn').addEventListener('click',()=>{
+ $('result').style.display='none';
+ window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</body>
+</html>
