@@ -1,0 +1,9 @@
+{
+  "name": "PatternMatch AI",
+  "short_name": "PatternMatch",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f1ea",
+  "theme_color": "#171717",
+  "description": "AI pattern concept assistant for tailors and fashion designers."
+}
