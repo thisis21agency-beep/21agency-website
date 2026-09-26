@@ -1,115 +1,47 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#171717">
-<link rel="manifest" href="/static/manifest.webmanifest">
-<title>PatternMatch AI</title>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PatternMatch AI</title>
 <style>
-:root{--bg:#f5f1ea;--card:#fff;--ink:#181818;--muted:#706a63;--line:#ddd5cb;--soft:#eee8df;--dark:#171717;--ok:#176a43}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-main{max-width:1080px;margin:auto;padding:18px}.hero{padding:12px 0 18px}.brand{font-size:12px;letter-spacing:.16em;font-weight:900;color:var(--muted)}
-h1{font-size:clamp(36px,7vw,64px);line-height:.96;margin:9px 0 12px}h2{margin:6px 0 8px}h3{font-size:15px;margin:0 0 9px}
-.sub{color:var(--muted);line-height:1.5;max-width:780px}.grid{display:grid;grid-template-columns:1fr;gap:16px}
-@media(min-width:880px){.grid{grid-template-columns:.82fr 1.18fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:23px;padding:18px}
-.upload{border:2px dashed var(--line);border-radius:18px;padding:14px;background:#fbfaf7}
-input[type=file]{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:13px;background:#fff}
-.preview{display:none;width:100%;max-height:440px;object-fit:contain;border-radius:14px;background:#eee9e2;margin-bottom:12px}
-button{width:100%;border:0;border-radius:14px;background:var(--dark);color:#fff;padding:15px;font-size:16px;font-weight:850;margin-top:14px;cursor:pointer}
-button:disabled{opacity:.4;cursor:not-allowed}.status{font-size:13px;color:var(--muted);margin-top:8px}.ok{color:var(--ok);font-weight:800}.error{color:#9f2424;font-weight:700}
-.loading{display:none;margin-top:12px;padding:12px;border-radius:12px;background:var(--soft);font-size:14px}.result{display:none}
-.pattern-board{margin-top:14px;border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:10px}.pattern-board svg{width:100%;height:auto;display:block;max-height:560px}
-.meta{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px;background:#fff}
-.sections{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}@media(min-width:620px){.sections{grid-template-columns:1fr 1fr}}
-.small{border:1px solid var(--line);border-radius:16px;padding:14px}ul{padding-left:20px;margin:0}li{margin:7px 0;line-height:1.4}
-.pieces{display:grid;grid-template-columns:1fr;gap:8px}.piece{border:1px solid var(--line);border-radius:12px;padding:11px}.piece b{display:block}.piece span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
-.warning{margin-top:12px;padding:12px;border-radius:14px;background:var(--soft);font-size:13px;line-height:1.45}.empty{min-height:320px;display:grid;place-items:center;text-align:center;color:var(--muted)}
-</style>
-</head>
-<body>
-<main>
-<section class="hero"><div class="brand">PATTERNMATCH AI</div><h1>The image decides the pattern.</h1>
-<p class="sub">Upload a customer's fashion reference. AI interprets the garment, identifies its construction, recommends the likely base block and visually breaks the outfit into pattern pieces for the tailor.</p></section>
+body{font-family:system-ui;margin:0;background:#f5f1ea;color:#171717}.wrap{max-width:900px;margin:auto;padding:18px}.card{background:#fff;border:1px solid #ddd5cb;border-radius:22px;padding:18px;margin:14px 0}h1{font-size:46px;line-height:.95;margin:12px 0}.muted{color:#756e66}.upload{border:2px dashed #ddd5cb;border-radius:18px;padding:14px}.preview{display:none;width:100%;max-height:420px;object-fit:contain;border-radius:14px;margin-bottom:12px}input,select,button{width:100%;box-sizing:border-box;padding:14px;font-size:16px;border-radius:13px;border:1px solid #d9d0c5}button{background:#171717;color:#fff;font-weight:800;margin-top:12px}.grid{display:grid;gap:10px}@media(min-width:700px){.grid{grid-template-columns:1fr 1fr}.four{grid-template-columns:1fr 1fr 1fr 1fr}}.box{border:1px solid #ddd5cb;border-radius:14px;padding:12px}.pill{display:inline-block;padding:7px 10px;border:1px solid #ddd5cb;border-radius:999px;margin:4px;font-size:12px}.hidden{display:none}.bar{height:9px;background:#eee7de;border-radius:10px;overflow:hidden}.fill{height:100%;width:0;background:#171717}.error{color:#9f2424;font-weight:700}.ok{color:#176a43;font-weight:800}svg{width:100%;height:auto;background:#faf8f4;border-radius:14px}
+</style></head><body><div class="wrap">
+<div><small>PATTERNMATCH AI · LOCAL TEST MODE</small><h1>The image decides the pattern.</h1><p class="muted">Your phone reads the garment photo. PatternMatch then applies its own tailoring knowledge to build the pattern concept.</p><span class="pill">No OpenAI credits</span><span class="pill">Runs in browser</span><span class="pill">Built-in pattern knowledge</span></div>
 
-<div class="grid">
-<section class="card">
-<div class="upload">
-<img id="preview" class="preview" alt="Uploaded fashion reference">
-<input id="photo" type="file" accept="image/*">
-<div id="fileStatus" class="status">Choose a clear full-garment image.</div>
-</div>
-<button id="analyse" disabled>Analyse image & build pattern idea</button>
-<div id="loading" class="loading">Studying garment structure, seams, silhouette and likely pattern pieces…</div>
-<div id="error" class="status"></div>
-<div class="warning">Best results: use a clear front or 3/4 view where the whole garment is visible.</div>
-</section>
+<div class="card"><div class="upload"><img id="preview" class="preview"><input id="photo" type="file" accept="image/*"><p id="status" class="muted">Choose a clear garment photo.</p></div><button id="go" disabled>Interpret image & build pattern</button><div id="loading" class="hidden"><p id="loadText">Loading local vision model…</p><div class="bar"><div id="fill" class="fill"></div></div></div><p id="err"></p><p class="muted">First analysis may take a few minutes while the vision model downloads to your browser.</p></div>
 
-<section class="card">
-<div id="empty" class="empty"><div><div style="font-size:46px">✂️</div><h2>Tailor pattern view</h2><p>AI analysis and the pattern concept will appear here.</p></div></div>
-<div id="result" class="result">
-<div class="brand">AI GARMENT INTERPRETATION</div>
-<h2 id="patternTitle"></h2><p id="summary" class="sub"></p><div id="meta" class="meta"></div>
-<div class="pattern-board"><div id="diagram"></div></div>
-<div class="sections">
-<div class="small"><h3>Pattern pieces</h3><div id="pieces" class="pieces"></div></div>
-<div class="small"><h3>Pattern modifications</h3><ul id="mods"></ul></div>
-<div class="small"><h3>Measurements needed</h3><div id="measurements" class="meta"></div></div>
-<div class="small"><h3>Construction / fabric notes</h3><ul id="fabricNotes"></ul></div>
+<div id="result" class="card hidden"><small>IMAGE INTERPRETATION</small><h2 id="base"></h2><div id="reads" class="grid four"></div><h3>Detected construction features</h3><div id="features"></div><h3>Pattern concept</h3><div id="diagram"></div><div class="grid"><div class="box"><h3>Pattern pieces</h3><div id="pieces"></div></div><div class="box"><h3>How to draft / modify</h3><ul id="mods"></ul></div><div class="box"><h3>Measurements needed</h3><div id="measures"></div></div><div class="box"><h3>Construction notes</h3><ul id="notes"></ul></div></div>
+<details style="margin-top:16px"><summary><b>Correct the AI reading if needed</b></summary><div class="grid" style="margin-top:12px"><select id="g"></select><select id="s"></select><select id="n"></select><select id="sl"></select></div><button id="rebuild">Rebuild pattern</button></details></div>
 </div>
-<div id="caution" class="warning"></div>
-</div>
-</section>
-</div>
-</main>
-<script>
-const $=id=>document.getElementById(id);
-const photo=$('photo'),preview=$('preview'),analyse=$('analyse'),fileStatus=$('fileStatus'),loading=$('loading'),errorBox=$('error');
-let objectUrl=null;
-photo.addEventListener('change',()=>{
- const file=photo.files&&photo.files[0];analyse.disabled=true;errorBox.textContent='';
- if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}
- if(!file){preview.style.display='none';fileStatus.textContent='Choose a clear full-garment image.';return}
- if(!file.type.startsWith('image/')){preview.style.display='none';fileStatus.innerHTML='<span class="error">Please choose an image file.</span>';return}
- objectUrl=URL.createObjectURL(file);preview.src=objectUrl;preview.style.display='block';
- fileStatus.innerHTML='<span class="ok">Ready:</span> '+file.name;analyse.disabled=false;
-});
-function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function pills(items){return (items||[]).map(x=>'<span class="pill">'+esc(x)+'</span>').join('')}
-function shape(name,i){
- const x=28+(i%4)*165,y=58+Math.floor(i/4)*190,lower=name.toLowerCase();let p;
- if(lower.includes('sleeve'))p=`M ${x+18} ${y+18} Q ${x+62} ${y-12} ${x+107} ${y+18} L ${x+100} ${y+120} Q ${x+62} ${y+138} ${x+25} ${y+120} Z`;
- else if(lower.includes('skirt'))p=`M ${x+34} ${y+10} L ${x+91} ${y+10} L ${x+120} ${y+132} L ${x+5} ${y+132} Z`;
- else if(lower.includes('trouser')||lower.includes('pant'))p=`M ${x+25} ${y+8} L ${x+95} ${y+8} L ${x+112} ${y+55} L ${x+92} ${y+132} L ${x+62} ${y+132} L ${x+65} ${y+66} L ${x+35} ${y+132} L ${x+7} ${y+132} L ${x+22} ${y+55} Z`;
- else if(lower.includes('collar')||lower.includes('facing'))p=`M ${x+12} ${y+35} Q ${x+62} ${y} ${x+113} ${y+35} L ${x+92} ${y+72} Q ${x+62} ${y+45} ${x+32} ${y+72} Z`;
- else p=`M ${x+15} ${y+35} L ${x+62} ${y+8} L ${x+110} ${y+35} L ${x+96} ${y+130} L ${x+28} ${y+130} Z`;
- return{x,y,p};
-}
-function renderPattern(data){
- const pieces=data.pattern_pieces||[],rows=Math.ceil(Math.max(pieces.length,1)/4),height=Math.max(260,80+rows*190);
- let svg=`<svg viewBox="0 0 720 ${height}" role="img" aria-label="Tailor pattern concept"><rect width="720" height="${height}" fill="#fbfaf7"/><text x="24" y="30" font-family="system-ui" font-size="13" font-weight="700" fill="#6d6760">PATTERN CONCEPT — NOT FULL SCALE</text>`;
- pieces.forEach((piece,i)=>{const s=shape(piece.name,i);svg+=`<path d="${s.p}" fill="#eee7dd" stroke="#171717" stroke-width="2.5"/><line x1="${s.x+62}" y1="${s.y+35}" x2="${s.x+62}" y2="${s.y+118}" stroke="#777" stroke-width="1.5" stroke-dasharray="6 5"/><text x="${s.x+62}" y="${s.y+153}" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#171717">${esc(piece.name).slice(0,22)}</text>`;});
- return svg+'</svg>';
-}
-analyse.addEventListener('click',async()=>{
- const file=photo.files&&photo.files[0];if(!file)return;
- analyse.disabled=true;loading.style.display='block';errorBox.textContent='';
- const form=new FormData();form.append('file',file);
- try{
-  const r=await fetch('/api/analyse',{method:'POST',body:form});const p=await r.json();if(!r.ok)throw new Error(p.detail||'Image analysis failed.');
-  $('patternTitle').textContent=p.likely_base_pattern;
-  $('summary').textContent=p.garment_type.replaceAll('_',' ')+' • '+p.silhouette+'. AI confidence: '+p.confidence+'%.';
-  $('meta').innerHTML=pills(['Neck: '+p.neckline,'Sleeve: '+p.sleeve,'Waist: '+p.waistline,'Length: '+p.length,'Difficulty: '+p.difficulty,...(p.construction_features||[]).slice(0,5)]);
-  $('diagram').innerHTML=renderPattern(p);
-  $('pieces').innerHTML=(p.pattern_pieces||[]).map(x=>'<div class="piece"><b>'+esc(x.name)+'</b><span>'+esc(x.purpose)+'</span></div>').join('');
-  $('mods').innerHTML=(p.pattern_modifications||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
-  $('measurements').innerHTML=pills(p.measurements_needed);
-  $('fabricNotes').innerHTML=(p.fabric_notes||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
-  $('caution').textContent=p.caution;$('empty').style.display='none';$('result').style.display='block';
- }catch(e){errorBox.innerHTML='<span class="error">'+esc(e.message)+'</span>'}
- finally{loading.style.display='none';analyse.disabled=false}
-});
-if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/static/service-worker.js').catch(()=>{}))}
-</script>
-</body></html>
+
+<script type="module">
+const $=id=>document.getElementById(id);let model=null,latest=null,url=null;
+const KB={
+dress:{base:'Basic fitted bodice + skirt block',p:['Front bodice','Back bodice','Front skirt','Back skirt','Facing / lining'],m:['Bust','Waist','Hip','Shoulder','Shoulder-to-waist','Full length'],d:['Draft bodice to body measurements','Shape waist with darts or seams','Join selected skirt block at waist'],notes:['Make a toile before final fabric','Add closure allowance at back or side']},
+'corset dress':{base:'Corset / princess-line bodice + skirt block',p:['Centre front','Side front','Side back','Centre back','Skirt panels','Bodice lining'],m:['Bust','Underbust','Waist','Hip','Bust span','Shoulder-to-waist','Full length'],d:['Convert shaping into panel seams','Contour bust and underbust closely','Add support or boning channels'],notes:['Use stable lining/interfacing','Test bust fit in a toile']},
+blouse:{base:'Basic bodice block',p:['Front bodice','Back bodice','Sleeve if present','Facing'],m:['Bust','Waist','Shoulder','Back width','Top length','Sleeve length'],d:['Adapt neckline and hem from image','Transfer darts into visible seam/fullness'],notes:['Choose ease based on fabric and fit']},
+shirt:{base:'Classic shirt block',p:['Front shirt','Back shirt','Yoke','Sleeves','Collar','Collar stand','Cuffs'],m:['Chest/Bust','Shoulder','Back width','Shirt length','Sleeve length','Neck'],d:['Add button extension','Draft collar and stand','Add cuff/placket where visible'],notes:['Allow wearing ease']},
+skirt:{base:'Basic skirt block',p:['Front skirt','Back skirt','Waistband / facing'],m:['Waist','Hip','Waist-to-hip','Skirt length'],d:['Adjust flare/fullness from silhouette','Place darts/panels for waist fit'],notes:['Add vent/slit if movement requires it']},
+trouser:{base:'Basic trouser block',p:['Front trouser','Back trouser','Waistband','Pocket pieces'],m:['Waist','Hip','Rise','Thigh','Knee','Inseam','Outseam'],d:['Shape crotch curve','Adjust leg width from image','Add waistband and closure'],notes:['Check balance at crotch and hip']},
+jumpsuit:{base:'Bodice block + trouser block',p:['Front bodice','Back bodice','Front trouser','Back trouser','Sleeve if present','Facing'],m:['Bust','Waist','Hip','Shoulder-to-waist','Rise','Inseam','Full length'],d:['Join bodice and trouser at waist','Add torso/rise ease','Match closure through waist'],notes:['Check torso length carefully']},
+jacket:{base:'Tailored jacket / blazer block',p:['Front jacket','Side front','Back','Sleeve','Collar','Facing'],m:['Chest/Bust','Waist','Shoulder','Back width','Jacket length','Sleeve length'],d:['Draft lapel/front edge','Shape with seams/darts','Add collar and facing'],notes:['Interfacing is essential']},
+kaftan:{base:'Loose kaftan / bubu block',p:['Front body','Back body','Sleeve extension','Neck facing'],m:['Bust','Hip','Shoulder','Garment width','Full length','Sleeve length'],d:['Add body width and drape','Shape neckline from image','Use side seams/slits as required'],notes:['Fabric drape controls final silhouette']}
+};
+const L=[
+['garment','corset dress','a structured corset dress'],['garment','dress','a dress or gown'],['garment','blouse','a blouse or fashion top'],['garment','shirt','a button-up shirt'],['garment','skirt','a skirt'],['garment','trouser','a pair of trousers or pants'],['garment','jumpsuit','a jumpsuit'],['garment','jacket','a blazer or tailored jacket'],['garment','kaftan','a loose kaftan bubu or flowing robe'],
+['silhouette','fitted','a fitted bodycon silhouette'],['silhouette','A-line','an A-line silhouette'],['silhouette','flared','a strongly flared silhouette'],['silhouette','straight','a straight column silhouette'],['silhouette','loose','an oversized loose flowing silhouette'],
+['neckline','sweetheart','a sweetheart neckline'],['neckline','V-neck','a V neckline'],['neckline','round','a round neckline'],['neckline','square','a square neckline'],['neckline','off-shoulder','an off shoulder neckline'],['neckline','halter','a halter neckline'],['neckline','high neck','a high closed neckline'],
+['sleeve','sleeveless','a sleeveless garment'],['sleeve','short sleeve','a garment with short sleeves'],['sleeve','long sleeve','a garment with long fitted sleeves'],['sleeve','puff sleeve','a garment with puff sleeves'],['sleeve','bishop sleeve','a garment with bishop balloon sleeves'],['sleeve','statement sleeve','a garment with dramatic statement sleeves'],
+['feature','princess seams','visible princess seam panel lines'],['feature','darts','visible shaping darts at bust or waist'],['feature','pleats','visible pleated fabric'],['feature','gathers','visible gathers ruching or shirring'],['feature','boning','visible corset boning or rigid bodice structure'],['feature','panels','multiple visible garment panels and seam lines'],['feature','peplum','a peplum at the waist'],['feature','flare','a flared hem or circle-like fullness']
+];
+const sil={fitted:'Contour closely through bust, waist and hip while keeping movement.','A-line':'Add controlled sweep below the fitted area.',flared:'Slash and spread lower sections for extra hem width.',straight:'Keep side seams relatively straight.',loose:'Add generous wearing ease and reduce shaping.'};
+const neck={sweetheart:'Draft a curved sweetheart neckline and stabilise/line it.','V-neck':'Draft the V depth and stabilise the point.',round:'Redraw a smooth round neckline and add facing/binding.',square:'Square neckline corners and stabilise with facing.', 'off-shoulder':'Lower neckline around upper chest/back and add support.',halter:'Redirect shoulder coverage toward the neck.','high neck':'Raise neckline and add collar/facing if required.'};
+const sleeve={sleeveless:'Finish and stabilise armhole.', 'short sleeve':'Draft sleeve to visible short length.','long sleeve':'Draft full sleeve length and wrist width.','puff sleeve':'Slash/spread sleeve crown or hem for gathered volume.','bishop sleeve':'Add sleeve width and gather into cuff.','statement sleeve':'Increase sleeve volume to match the image.'};
+const feat={'princess seams':'Convert bust/waist dart intake into princess seam panels.',darts:'Retain or reposition shaping darts.',pleats:'Mark pleat positions, depth and fold direction.',gathers:'Add width/length at gathered areas.',boning:'Add internal support channels to fitted bodice panels.',panels:'Split master block along visible seam lines and add notches.',peplum:'Draft separate peplum from waist seam.',flare:'Slash/spread lower section to increase sweep.'};
+
+$('photo').onchange=()=>{const f=$('photo').files[0];$('go').disabled=!f;if(url)URL.revokeObjectURL(url);if(f){url=URL.createObjectURL(f);$('preview').src=url;$('preview').style.display='block';$('status').innerHTML='<span class="ok">Ready:</span> '+f.name}};
+async function load(){if(model)return model;$('loading').classList.remove('hidden');const T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0');model=await T.pipeline('zero-shot-image-classification','Xenova/clip-vit-base-patch32',{dtype:'q8',progress_callback:p=>{if(typeof p?.progress==='number'){$('fill').style.width=p.progress+'%';$('loadText').textContent='Downloading local vision model… '+Math.round(p.progress)+'%'}}});return model}
+function pick(res,g){const rows=res.filter(r=>L.find(x=>x[2]===r.label)?.[0]===g);const t=rows.reduce((a,b)=>a+b.score,0)||1;const top=rows[0];const m=L.find(x=>x[2]===top.label);return{value:m[1],confidence:Math.round(top.score/t*100)}}
+function feats(res){const rows=res.filter(r=>L.find(x=>x[2]===r.label)?.[0]==='feature');const t=rows.reduce((a,b)=>a+b.score,0)||1;return rows.filter((x,i)=>i<3&&x.score/t>.12).map(r=>L.find(x=>x[2]===r.label)[1])}
+$('go').onclick=async()=>{try{$('go').disabled=true;$('err').textContent='';const m=await load();$('loadText').textContent='Reading garment construction…';const r=await m($('photo').files[0],L.map(x=>x[2]));build({garment:pick(r,'garment'),silhouette:pick(r,'silhouette'),neckline:pick(r,'neckline'),sleeve:pick(r,'sleeve'),features:feats(r)});$('loadText').textContent='Pattern knowledge applied.'}catch(e){$('err').className='error';$('err').textContent='Local AI could not run on this browser: '+e.message}finally{$('go').disabled=false}};
+function opts(a,v){return a.map(x=>'<option '+(x===v?'selected':'')+'>'+x+'</option>').join('')}
+function build(x){const k=KB[x.garment.value]||KB.dress;latest=x;$('base').textContent=k.base;$('reads').innerHTML=[['Garment',x.garment],['Silhouette',x.silhouette],['Neckline',x.neckline],['Sleeve',x.sleeve]].map(([a,b])=>'<div class="box"><small>'+a+'</small><br><b>'+b.value+'</b><div class="muted">'+b.confidence+'% confidence</div></div>').join('');$('features').innerHTML=(x.features.length?x.features:['No strong extra feature']).map(z=>'<span class="pill">'+z+'</span>').join('');const mods=[...k.d,sil[x.silhouette.value],neck[x.neckline.value],sleeve[x.sleeve.value],...x.features.map(f=>feat[f]).filter(Boolean)];$('pieces').innerHTML=k.p.map((z,i)=>'<div class="box">'+(i+1)+'. '+z+'</div>').join('');$('mods').innerHTML=mods.filter(Boolean).map(z=>'<li>'+z+'</li>').join('');$('measures').innerHTML=k.m.map(z=>'<span class="pill">'+z+'</span>').join('');$('notes').innerHTML=k.notes.map(z=>'<li>'+z+'</li>').join('');$('diagram').innerHTML=draw(k.p);$('g').innerHTML=opts(Object.keys(KB),x.garment.value);$('s').innerHTML=opts(Object.keys(sil),x.silhouette.value);$('n').innerHTML=opts(Object.keys(neck),x.neckline.value);$('sl').innerHTML=opts(Object.keys(sleeve),x.sleeve.value);$('result').classList.remove('hidden')}
+$('rebuild').onclick=()=>build({garment:{value:$('g').value,confidence:latest.garment.confidence},silhouette:{value:$('s').value,confidence:latest.silhouette.confidence},neckline:{value:$('n').value,confidence:latest.neckline.confidence},sleeve:{value:$('sl').value,confidence:latest.sleeve.confidence},features:latest.features});
+function draw(p){let h=100+Math.ceil(p.length/3)*180,s='<svg viewBox="0 0 720 '+h+'"><text x="20" y="28" font-size="13">PATTERN CONCEPT — NOT FULL SCALE</text>';p.forEach((n,i)=>{let x=30+(i%3)*225,y=55+Math.floor(i/3)*180,q=n.toLowerCase(),d=q.includes('skirt')?'M'+(x+35)+' '+y+' L'+(x+115)+' '+y+' L'+(x+150)+' '+(y+125)+' L'+x+' '+(y+125)+' Z':q.includes('sleeve')?'M'+(x+15)+' '+(y+25)+' Q'+(x+75)+' '+(y-5)+' '+(x+135)+' '+(y+25)+' L'+(x+120)+' '+(y+125)+' L'+(x+30)+' '+(y+125)+' Z':'M'+(x+15)+' '+(y+30)+' L'+(x+75)+' '+y+' L'+(x+135)+' '+(y+30)+' L'+(x+118)+' '+(y+125)+' L'+(x+32)+' '+(y+125)+' Z';s+='<path d="'+d+'" fill="#eee7dd" stroke="#171717" stroke-width="2"/><text x="'+(x+75)+'" y="'+(y+148)+'" text-anchor="middle" font-size="11">'+n.slice(0,22)+'</text>'});return s+'</svg>'}
+</script></body></html>
